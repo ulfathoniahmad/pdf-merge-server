@@ -5,9 +5,15 @@ const app = express();
 // Middleware untuk menerima data JSON
 app.use(express.json({ limit: '10mb' }));
 
+// Tambahkan logging untuk semua request
+app.use((req, res, next) => {
+  console.log(`${req.method} request diterima di ${req.url}`);
+  next();
+});
+
 app.post('/merge-pdfs', async (req, res) => {
   try {
-    console.log('Request diterima:', JSON.stringify(req.body, null, 2));
+    console.log('POST /merge-pdfs diterima dengan body:', JSON.stringify(req.body, null, 2));
     const pdfFiles = req.body.files;
 
     // Validasi input
@@ -42,7 +48,6 @@ app.post('/merge-pdfs', async (req, res) => {
   }
 });
 
-// Route untuk memeriksa server
 app.get('/', (req, res) => {
   res.status(200).send('PDF Merge Server berjalan');
 });
