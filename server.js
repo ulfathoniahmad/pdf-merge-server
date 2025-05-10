@@ -7,18 +7,18 @@ app.use(express.json({ limit: '10mb' }));
 
 app.post('/merge-pdfs', async (req, res) => {
   try {
-    console.log('Menerima request:', JSON.stringify(req.body, null, 2));
+    console.log('Request diterima:', JSON.stringify(req.body, null, 2));
     const pdfFiles = req.body.files;
 
     // Validasi input
     if (!pdfFiles || !Array.isArray(pdfFiles) || pdfFiles.length === 0) {
-      throw new Error('Invalid or missing files array in request body');
+      throw new Error('Array files tidak valid atau kosong');
     }
 
     const pdfDocs = [];
     for (const pdfBase64 of pdfFiles) {
       if (typeof pdfBase64 !== 'string') {
-        throw new Error('Invalid base64 string');
+        throw new Error('String base64 tidak valid');
       }
       const pdfBytes = Buffer.from(pdfBase64, 'base64');
       const pdfDoc = await PDFDocument.load(pdfBytes);
@@ -35,16 +35,16 @@ app.post('/merge-pdfs', async (req, res) => {
     // Simpan PDF yang digabungkan
     const mergedPdfBytes = await mergedPdf.save();
     res.set('Content-Type', 'application/pdf');
-    res.send(Buffer.from(mergedPdfBytes));
+    res.status(200).send(Buffer.from(mergedPdfBytes));
   } catch (error) {
     console.error('Error:', error.message, error.stack);
     res.status(500).json({ error: error.message });
   }
 });
 
-// Route dasar untuk memeriksa server
+// Route untuk memeriksa server
 app.get('/', (req, res) => {
-  res.send('PDF Merge Server is running');
+  res.status(200).send('PDF Merge Server berjalan');
 });
 
 const PORT = process.env.PORT || 3000;
